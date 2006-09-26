@@ -1,9 +1,9 @@
 <?php
 /*
 Plugin Name: JAW Popular Posts Widget
-Plugin URI: http://justaddwater.dk/wordpress-plugins/
+Plugin URI: http://justaddwater.dk/wordpress-plugins/widgets/
 Description: Adds a sidebar widget that shows the most popular posts. Requires the <a href="http://automattic.com/code/widgets/">Sidebar Widgets plugin</a> from Automattic and the <a href="http://www.alexking.org/index.php?content=software/wordpress/content.php">Popularity Contest plugin</a> by Alex King.
-Version: 1.0 
+Version: 1.0.1 
 Author: Thomas Watson Steen
 Author URI: http://justaddwater.dk/
 */
@@ -20,7 +20,8 @@ class JAWPopularPostsWidget
 
                 print($before_widget . $before_title . $title . $after_title);
 		print("<ul>\n");
-		akpc_most_popular($items);
+		if(function_exists("akpc_most_popular"))
+			akpc_most_popular($items);
 		print("</ul>\n");
                 print($after_widget);
         }
@@ -43,7 +44,7 @@ class JAWPopularPostsWidget
 		$title = htmlspecialchars($options['title'], ENT_QUOTES);
 		$items = (int) $options['items'];
 ?>
-		<p><label for="popular-title"><?php _e('Title:'); ?> </label><input style="width: 250px;" id="popular-title" name="popular-title" type="text" value="<?php print($title); ?>" /></p>
+		<p><label for="popular-title"><?php _e('Title:'); ?> </label><input style="width: 250px;" id="popular-title" name="popular-title" type="text" value="<?=$title?>" /></p>
 		<p><label for="popular-items"><?php _e('How many posts would you like to display?'); ?> </label>
 		<select id="popular-items" name="popular-items">
 <?php 
@@ -58,8 +59,9 @@ class JAWPopularPostsWidget
 
 	function load()
 	{
-		register_widget_control(__('Popular Posts'), array('JAWPopularPostsWidget', 'control'), 300, 120);
-		if(function_exists("akpc_most_popular"))
+		if(function_exists("register_widget_control"))
+			register_widget_control(__('Popular Posts'), array('JAWPopularPostsWidget', 'control'), 300, 120);
+		if(function_exists("register_sidebar_widget") && function_exists("akpc_most_popular"))
 			register_sidebar_widget(__('Popular Posts'), array('JAWPopularPostsWidget', 'widget'));
 	}
 
